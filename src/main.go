@@ -3,6 +3,7 @@ package main
 import (
 	"CRUDGEN/src/api/controller"
 	"CRUDGEN/src/utils"
+	"CRUDGEN/src/writer/java"
 	"fmt"
 	"github.com/gin-gonic/gin"
 )
@@ -24,6 +25,8 @@ func main() {
 	utils.CheckForError(err, "Problem with proxies in main")
 
 	controller.TableController(router)
+
+	java.GenerateJavaProject("POCRUD")
 
 	err = router.Run(port)
 	utils.CheckForError(err, "Fatal error with router")

@@ -33,6 +33,11 @@ func FindAllTable(tables *[]model.Table) (int, error) {
 	return utils.CheckForQueryError(err, "Error FindUserById")
 }
 
+func FindAllTableAccordingToAProject(tables *[]model.Table, projectName string) (int, error) {
+	err := utils.Db.Preload("Fields").Where("projectName = ?", projectName).Find(&tables).Error
+	return utils.CheckForQueryError(err, "Error FindUserById")
+}
+
 func DeleteTable(id string) (int, error) {
 	err := utils.Db.Delete(&model.Table{}, id).Error
 	return utils.CheckForQueryError(err, "Error Delete user")

@@ -10,23 +10,27 @@ import (
 
 func GenerateJavaProject(projectName string) {
 	var tables []model.Table
-	_, dataErr := repository.FindAllTable(&tables)
+	_, dataErr := repository.FindAllTableAccordingToAProject(&tables, projectName)
 	if dataErr != nil {
 		return
 	}
 
+	// TODO ajouter une relation pour définir le projet et catégoriser les tables.
 	resourcesDirectory := fmt.Sprintf("C:/CRUDGenerator/%s/%s/src/main/resources", projectName, tables[0].FolderName)
+	modelDirectory := fmt.Sprintf("C:/CRUDGenerator/%s/%s/src/main/java/com/ne/%s/model", projectName, tables[0].FolderName, tables[0].FolderName)
+	repositoryDirectory := fmt.Sprintf("C:/CRUDGenerator/%s/%s/src/main/java/com/ne/%s/repository", projectName, tables[0].FolderName, tables[0].FolderName)
 
-	if err := os.MkdirAll("C:/CRUDGenerator/myproject/nomDeMicroService/src/main/resources", os.ModePerm); err != nil {
+	if err := os.MkdirAll(resourcesDirectory, os.ModePerm); err != nil {
 		log.Fatal(err)
 	}
-	if err := os.MkdirAll("C:/CRUDGenerator/myproject/nomDeMicroService/src/main/java/com/ne/nomDeMicroService/model", os.ModePerm); err != nil {
+	if err := os.MkdirAll(modelDirectory, os.ModePerm); err != nil {
 		log.Fatal(err)
 	}
-	if err := os.MkdirAll("C:/CRUDGenerator/myproject/nomDeMicroService/src/main/java/com/ne/nomDeMicroService/repository", os.ModePerm); err != nil {
+	if err := os.MkdirAll(repositoryDirectory, os.ModePerm); err != nil {
 		log.Fatal(err)
 	}
 
+	// TODO A mettre dans des thread différents en fin de projet.
 	CreateJavaModel(tables)
 	CreateJavaRepositories(tables)
 }

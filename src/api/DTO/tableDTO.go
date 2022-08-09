@@ -5,9 +5,11 @@ import (
 )
 
 type CreateTableDTO struct {
-	Name       string           `binding:"required" json:"name"`
-	FolderName string           `json:"folderName"`
-	Fields     []CreateFieldDTO `binding:"required" json:"fields"`
+	Name        string `binding:"required" json:"name"`
+	FolderName  string `json:"folderName"`
+	ProjectName string `binding:"required" json:"projectName"`
+
+	Fields []CreateFieldDTO `binding:"required" json:"fields"`
 }
 type CreateFieldDTO struct {
 	Name       string `binding:"required" json:"name"`
@@ -24,6 +26,7 @@ func MapCreateTableDTOToTable(DTO CreateTableDTO) model.Table {
 	var fields []model.Field
 	table.Name = DTO.Name
 	table.FolderName = DTO.FolderName
+	table.ProjectName = DTO.ProjectName
 	for i := 0; i < len(DTO.Fields); i++ {
 		fields = append(fields, MapDTOToField(DTO.Fields[i]))
 	}
@@ -32,10 +35,11 @@ func MapCreateTableDTOToTable(DTO CreateTableDTO) model.Table {
 }
 
 type UpdateTableDTO struct {
-	ID         uint             `binding:"required" json:"id"`
-	Name       string           `binding:"required" json:"name"`
-	FolderName string           `binding:"required" json:"folderName"`
-	Fields     []UpdateFieldDTO `binding:"required" json:"fields"`
+	ID          uint             `binding:"required" json:"id"`
+	Name        string           `binding:"required" json:"name"`
+	FolderName  string           `binding:"required" json:"folderName"`
+	ProjectName string           `binding:"required" json:"projectName"`
+	Fields      []UpdateFieldDTO `binding:"required" json:"fields"`
 }
 type UpdateFieldDTO struct {
 	ID         uint   `binding:"required" json:"id"`
@@ -54,6 +58,7 @@ func MapUpdateTableDTOToTable(DTO UpdateTableDTO) model.Table {
 	table.ID = DTO.ID
 	table.Name = DTO.Name
 	table.FolderName = DTO.FolderName
+	table.ProjectName = DTO.ProjectName
 	for i := 0; i < len(DTO.Fields); i++ {
 		fields = append(fields, MapDTOToUpdateField(DTO.Fields[i]))
 	}
@@ -62,10 +67,11 @@ func MapUpdateTableDTOToTable(DTO UpdateTableDTO) model.Table {
 }
 
 type FindTableDTO struct {
-	ID         uint             `binding:"required" json:"id"`
-	Name       string           `binding:"required" json:"name"`
-	FolderName string           `binding:"required" json:"folderName"`
-	Fields     []UpdateFieldDTO `binding:"required" json:"fields"`
+	ID          uint             `binding:"required" json:"id"`
+	Name        string           `binding:"required" json:"name"`
+	FolderName  string           `binding:"required" json:"folderName"`
+	ProjectName string           `binding:"required" json:"projectName"`
+	Fields      []UpdateFieldDTO `binding:"required" json:"fields"`
 }
 type FindFieldDTO struct {
 	ID         uint   `binding:"required" json:"id"`
@@ -84,6 +90,7 @@ func MapTableToFindTableDTO(table model.Table) FindTableDTO {
 	DTO.ID = table.ID
 	DTO.Name = table.Name
 	DTO.FolderName = table.FolderName
+	table.ProjectName = DTO.ProjectName
 
 	for i := 0; i < len(table.Fields); i++ {
 		fieldsDTO = append(fieldsDTO, MapFindTableToDTO(table.Fields[i]))
