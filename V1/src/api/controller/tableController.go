@@ -1,7 +1,7 @@
 package controller
 
 import (
-	"CRUDGEN/src/api/services"
+	"CRUDGEN/V1/src/api/services"
 	"github.com/gin-gonic/gin"
 )
 

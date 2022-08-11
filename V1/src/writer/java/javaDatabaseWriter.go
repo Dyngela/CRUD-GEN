@@ -1,7 +1,7 @@
 package java
 
 import (
-	"CRUDGEN/src/api/model"
+	"CRUDGEN/V1/src/api/model"
 	"fmt"
 	"github.com/iancoleman/strcase"
 	"golang.org/x/text/cases"

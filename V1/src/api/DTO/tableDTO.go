@@ -1,7 +1,7 @@
 package DTO
 
 import (
-	"CRUDGEN/src/api/model"
+	model2 "CRUDGEN/V1/src/api/model"
 )
 
 type CreateTableDTO struct {
@@ -21,9 +21,9 @@ type CreateFieldDTO struct {
 	TableId    uint   `binding:"required" json:"tableId"`
 }
 
-func MapCreateTableDTOToTable(DTO CreateTableDTO) model.Table {
-	var table model.Table
-	var fields []model.Field
+func MapCreateTableDTOToTable(DTO CreateTableDTO) model2.Table {
+	var table model2.Table
+	var fields []model2.Field
 	table.Name = DTO.Name
 	table.FolderName = DTO.FolderName
 	table.ProjectName = DTO.ProjectName
@@ -52,9 +52,9 @@ type UpdateFieldDTO struct {
 	TableId    uint   `binding:"required" json:"tableId"`
 }
 
-func MapUpdateTableDTOToTable(DTO UpdateTableDTO) model.Table {
-	var table model.Table
-	var fields []model.Field
+func MapUpdateTableDTOToTable(DTO UpdateTableDTO) model2.Table {
+	var table model2.Table
+	var fields []model2.Field
 	table.ID = DTO.ID
 	table.Name = DTO.Name
 	table.FolderName = DTO.FolderName
@@ -84,7 +84,7 @@ type FindFieldDTO struct {
 	TableId    uint   `binding:"required" json:"tableId"`
 }
 
-func MapTableToFindTableDTO(table model.Table) FindTableDTO {
+func MapTableToFindTableDTO(table model2.Table) FindTableDTO {
 	var DTO FindTableDTO
 	var fieldsDTO []UpdateFieldDTO
 	DTO.ID = table.ID
@@ -99,7 +99,7 @@ func MapTableToFindTableDTO(table model.Table) FindTableDTO {
 	return DTO
 }
 
-func MapTablesToFindTableDTO(table []model.Table) []FindTableDTO {
+func MapTablesToFindTableDTO(table []model2.Table) []FindTableDTO {
 	var DTO []FindTableDTO
 	for i := 0; i < len(table); i++ {
 		DTO = append(DTO, MapTableToFindTableDTO(table[i]))

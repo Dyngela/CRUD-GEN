@@ -1,8 +1,8 @@
 package java
 
 import (
-	"CRUDGEN/src/api/model"
-	"CRUDGEN/src/writer/writerUtils"
+	"CRUDGEN/V1/src/api/model"
+	"CRUDGEN/V1/src/writer/writerUtils"
 	"fmt"
 	"github.com/iancoleman/strcase"
 	"log"

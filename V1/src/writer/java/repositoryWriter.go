@@ -1,15 +1,15 @@
 package java
 
 import (
-	"CRUDGEN/src/api/model"
-	"CRUDGEN/src/writer/writerUtils"
+	model2 "CRUDGEN/V1/src/api/model"
+	"CRUDGEN/V1/src/writer/writerUtils"
 	"fmt"
 	"github.com/iancoleman/strcase"
 	"log"
 	"os"
 )
 
-func CreateJavaRepositories(tables []model.Table) {
+func CreateJavaRepositories(tables []model2.Table) {
 	for i := 0; i < len(tables); i++ {
 		f, err := os.Create(
 			"C:/CRUDGenerator/myproject/nomDeMicroService/src/main/java/com/ne/nomDeMicroService/repository/" + strcase.ToCamel(tables[i].Name) + "Repository.txt")
@@ -33,9 +33,9 @@ func CreateJavaRepositories(tables []model.Table) {
 
 }
 
-func createRepo(table model.Table) (string, error) {
+func createRepo(table model2.Table) (string, error) {
 	className := strcase.ToCamel(table.Name)
-	primaryField := findPrimaryKey(table).(model.Field)
+	primaryField := findPrimaryKey(table).(model2.Field)
 
 	repo := fmt.Sprintf(
 		`
@@ -53,8 +53,8 @@ public interface %sRepository extends JpaRepository<%s, %s>`,
 	return repo, nil
 }
 
-func JPAMethods(table model.Table) string {
-	primaryField := findPrimaryKey(table).(model.Field)
+func JPAMethods(table model2.Table) string {
+	primaryField := findPrimaryKey(table).(model2.Field)
 	if primaryField.Name == "" {
 		return ""
 	}
@@ -62,11 +62,11 @@ func JPAMethods(table model.Table) string {
 	return fmt.Sprintf(`	Optional<%s> findById(%s id)`, strcase.ToCamel(table.Name), primaryField.Type)
 }
 
-func findPrimaryKey(table model.Table) any {
+func findPrimaryKey(table model2.Table) any {
 	for i := 0; i < len(table.Fields); i++ {
 		if table.Fields[i].PrimaryKey {
 			return table.Fields[i]
 		}
 	}
-	return model.Field{Name: ""}
+	return model2.Field{Name: ""}
 }

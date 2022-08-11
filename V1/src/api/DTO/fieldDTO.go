@@ -1,6 +1,8 @@
 package DTO
 
-import "CRUDGEN/src/api/model"
+import (
+	"CRUDGEN/V1/src/api/model"
+)
 
 func MapDTOToField(DTO CreateFieldDTO) model.Field {
 	var field model.Field

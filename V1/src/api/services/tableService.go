@@ -1,10 +1,10 @@
 package services
 
 import (
-	"CRUDGEN/src/api/DTO"
-	"CRUDGEN/src/api/model"
-	"CRUDGEN/src/api/repository"
-	"CRUDGEN/src/utils"
+	"CRUDGEN/V1/src/api/DTO"
+	"CRUDGEN/V1/src/api/model"
+	"CRUDGEN/V1/src/api/repository"
+	"CRUDGEN/V1/src/utils"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )

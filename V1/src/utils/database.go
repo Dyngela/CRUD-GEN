@@ -1,7 +1,7 @@
 package utils
 
 import (
-	"CRUDGEN/src/api/model"
+	model2 "CRUDGEN/V1/src/api/model"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
@@ -17,6 +17,6 @@ func ConnectToDatabase() {
 	}
 }
 func SyncDatabase() {
-	err := Db.AutoMigrate(&model.Table{}, &model.Field{})
+	err := Db.AutoMigrate(&model2.Table{}, &model2.Field{})
 	CheckForError(err, "Problem automigrating data")
 }
