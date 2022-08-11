@@ -1,7 +1,7 @@
 create table product (
     id serial PRIMARY KEY,
-    name varchar(40) NOT NULL UNIQUE,
-    price numeric(5, 2),
+    name varchar       (40) NOT NULL UNIQUE,
+    price numeric     (5,    2),
     since date
 );
 
@@ -12,4 +12,3 @@ create table users (
 
 -- drop table product;
 -- alter table product ADD COLUMN ()
-

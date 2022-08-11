@@ -1,6 +1,7 @@
 package AST
 
 import (
+	"regexp"
 	"strings"
 	"unicode"
 )
@@ -11,9 +12,14 @@ func cleanFile(sqlSplit []string) []string {
 	}
 
 	for i := 0; i < len(sqlSplit); i++ {
+		sqlSplit[i] = cleanComment(sqlSplit[i])
 		sqlSplit[i] = cleanString(sqlSplit[i])
 	}
 	return sqlSplit
+}
+
+func cleanComment(str string) string {
+	return str
 }
 
 // ShouldPopLastIndex If the last index of an array is empty, then we trim it.
@@ -48,3 +54,21 @@ func cleanString(str string) string {
 func cleanLastParenthesis(str string) string {
 	return strings.Replace(str, ")", "", 1)
 }
+
+func cleanDoubleWhiteSpace(str string) string {
+	space := regexp.MustCompile(`\s+`)
+	cleanedString := space.ReplaceAllString(str, " ")
+	return cleanedString
+}
+
+func cleanInParenthesisWhiteSpace(str string) string {
+	//parenthesis := regexp.MustCompile(`\s*\((.*?)\)`)
+	parenthesis := regexp.MustCompile(`\s*\(`)
+	cleanedString := parenthesis.ReplaceAllString(str, "(")
+	//log.Println(cleanedString)
+	return cleanedString
+}
+
+// numeric\s*\((.*?)\) -> get numeric and value
+// Je veux effacer tout espace dans les parenthése et tout les espace a gauche de la
+// parenthèse

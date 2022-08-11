@@ -6,8 +6,12 @@ import (
 	"strings"
 )
 
+var Tables []HandleQuery
+
 func ReadFile() {
-	dat, err := os.ReadFile("C:\\dev\\T&S\\catalogue\\module\\CRUD generator\\CRUD-POC\\V2\\sql\\script.sql")
+	//dat, err := os.ReadFile("C:\\dev\\T&S\\catalogue\\module\\CRUD generator\\CRUD-POC\\V2\\sql\\script.sql")
+	//dat, err := os.ReadFile("C:\\dev\\Taff\\T&S\\Catalogue\\CRUDGEN\\V2\\sql\\script.sql")
+	dat, err := os.ReadFile("C:\\dev\\Taff\\T&S\\Catalogue\\CRUDGEN\\V2\\sql\\KIS.sql")
 	check(err)
 	lexFile(string(dat))
 }
@@ -25,15 +29,23 @@ func lexFile(sql string) {
 
 	for i := 0; i < len(sqlSplit); i++ {
 		order := strings.ToUpper(sqlSplit[i])
+
 		if strings.Contains(order, "CREATE") {
+
 			index := strings.Index(sqlSplit[i], "(")
-			_ = getCreateTableDeclaration(sqlSplit[i], index)
-			_ = getCreateFieldDeclaration(sqlSplit[i], index)
+
+			declaration := getCreateTableDeclaration(sqlSplit[i], index)
+			setTableName(declaration, i)
+
+			columns := getCreateFieldDeclaration(sqlSplit[i], index)
+			setColumns(columns, index)
 
 		}
+
 		if strings.Contains(order, "DROP") {
 
 		}
+
 		if strings.Contains(order, "ALTER") {
 
 		}
@@ -53,7 +65,35 @@ func getCreateFieldDeclaration(str string, index int) []string {
 		columns[i] = strings.TrimSpace(columns[i])
 	}
 	columns[len(columns)-1] = cleanLastParenthesis(columns[len(columns)-1])
-	log.Println(columns[len(columns)-1])
-
 	return columns
+}
+
+func setTableName(str string, index int) {
+	str = cleanDoubleWhiteSpace(str)
+	str = strings.TrimSpace(str)
+	decomposedDeclaration := strings.Split(str, " ")
+	log.Println(str)
+
+	switch strings.ToUpper(decomposedDeclaration[1]) {
+	case "TABLE":
+		var table HandleQuery
+		table.TableName = decomposedDeclaration[len(decomposedDeclaration)-1]
+		Tables = append(Tables, table)
+	case "AUTRE STATEMENT":
+		log.Println(decomposedDeclaration[1])
+	default:
+		log.Println("Unknown keyword", decomposedDeclaration[1])
+	}
+}
+
+func setColumns(str []string, index int) {
+	//var columns []Column
+	for i := 0; i < len(str); i++ {
+		cleanColumn := cleanDoubleWhiteSpace(str[i])
+		cleanColumn = cleanInParenthesisWhiteSpace(str[i])
+		decomposedColumn := strings.Split(cleanColumn, " ")
+		for c := 0; c < len(decomposedColumn); c++ {
+			//log.Println(decomposedColumn[c])
+		}
+	}
 }
