@@ -60,7 +60,7 @@ func getCreateTableDeclaration(str string, index int) string {
 
 func getCreateFieldDeclaration(str string, index int) []string {
 	table := str[index+1:]
-	columns := strings.Split(table, ",    ")
+	columns := strings.Split(table, ",  ")
 	for i := 0; i < len(columns); i++ {
 		columns[i] = strings.TrimSpace(columns[i])
 	}
@@ -72,8 +72,7 @@ func setTableName(str string, index int) {
 	str = cleanDoubleWhiteSpace(str)
 	str = strings.TrimSpace(str)
 	decomposedDeclaration := strings.Split(str, " ")
-	log.Println(str)
-
+	//log.Println(decomposedDeclaration)
 	switch strings.ToUpper(decomposedDeclaration[1]) {
 	case "TABLE":
 		var table HandleQuery
@@ -89,11 +88,17 @@ func setTableName(str string, index int) {
 func setColumns(str []string, index int) {
 	//var columns []Column
 	for i := 0; i < len(str); i++ {
+		//cleanColumn := formatNumeric(str[i])
 		cleanColumn := cleanDoubleWhiteSpace(str[i])
 		cleanColumn = cleanInParenthesisWhiteSpace(str[i])
-		decomposedColumn := strings.Split(cleanColumn, " ")
-		for c := 0; c < len(decomposedColumn); c++ {
-			//log.Println(decomposedColumn[c])
+		//log.Println(cleanColumn)
+		temp := strings.Split(cleanColumn, " ")
+		columnName := temp[0]
+		if strings.Contains(columnName, "`") {
+			log.Println(columnName)
+		}
+		if strings.Contains(cleanColumn, "NOT NULL") {
+
 		}
 	}
 }

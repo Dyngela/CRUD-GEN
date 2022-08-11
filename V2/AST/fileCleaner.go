@@ -18,8 +18,16 @@ func cleanFile(sqlSplit []string) []string {
 	return sqlSplit
 }
 
+// cleanComment Clean every comment of the sql file
 func cleanComment(str string) string {
-	return str
+	commentWithDoubleDash := regexp.MustCompile(`--.*`)
+	commentWithoutMultilineComment := regexp.MustCompile("/\\*[\\s\\S]*?\\*/")
+	commentWithDiese := regexp.MustCompile(`#.*`)
+
+	cleanedString := commentWithDoubleDash.ReplaceAllString(str, "")
+	cleanedString = commentWithoutMultilineComment.ReplaceAllString(cleanedString, "")
+	cleanedString = commentWithDiese.ReplaceAllString(cleanedString, "")
+	return cleanedString
 }
 
 // ShouldPopLastIndex If the last index of an array is empty, then we trim it.
@@ -62,13 +70,15 @@ func cleanDoubleWhiteSpace(str string) string {
 }
 
 func cleanInParenthesisWhiteSpace(str string) string {
-	//parenthesis := regexp.MustCompile(`\s*\((.*?)\)`)
 	parenthesis := regexp.MustCompile(`\s*\(`)
 	cleanedString := parenthesis.ReplaceAllString(str, "(")
-	//log.Println(cleanedString)
 	return cleanedString
 }
 
-// numeric\s*\((.*?)\) -> get numeric and value
-// Je veux effacer tout espace dans les parenthése et tout les espace a gauche de la
-// parenthèse
+//TODO Format number so they have that format float(x,y) -> without space.
+//So we can modify the split and ensure we dont split in lexer.setColumns wrong
+//func formatNumeric(str string) string {
+//	parenthesis := regexp.MustCompile(`\s*\(`)
+//	cleanedString := parenthesis.ReplaceAllString(str, "")
+//	return cleanedString
+//}
