@@ -3,6 +3,7 @@ package AST
 import (
 	"log"
 	"os"
+	"regexp"
 	"strings"
 )
 
@@ -38,7 +39,7 @@ func lexFile(sql string) {
 			setTableName(declaration, i)
 
 			columns := getCreateFieldDeclaration(sqlSplit[i], index)
-			setColumns(columns, index)
+			setColumns(columns)
 
 		}
 
@@ -85,20 +86,73 @@ func setTableName(str string, index int) {
 	}
 }
 
-func setColumns(str []string, index int) {
-	//var columns []Column
+func setColumns(str []string) {
+	var columns []Column
 	for i := 0; i < len(str); i++ {
-		//cleanColumn := formatNumeric(str[i])
+		var primaryKeyFieldName = ""
+
+		var tempColumn = GetColumn()
 		cleanColumn := cleanDoubleWhiteSpace(str[i])
 		cleanColumn = cleanInParenthesisWhiteSpace(str[i])
-		//log.Println(cleanColumn)
-		temp := strings.Split(cleanColumn, " ")
-		columnName := temp[0]
-		if strings.Contains(columnName, "`") {
-			log.Println(columnName)
-		}
-		if strings.Contains(cleanColumn, "NOT NULL") {
 
+		if strings.Contains(cleanColumn, "PRIMARY KEY") {
+			primaryKeyFieldName = findConstraintFieldName(cleanColumn)
 		}
+
+		if isAColumnWithPrimitiveType(str[i]) {
+			tempColumn.DataType = findPrimitiveType(str[i])
+
+			temp := strings.Split(cleanColumn, " ")
+			tempColumn.ColumnName = strings.ReplaceAll(temp[0], "`", "")
+			if strings.Contains(cleanColumn, "NOT NULL") {
+				tempColumn.IsNullable = false
+			}
+			if strings.Contains(cleanColumn, "UNIQUE") {
+				tempColumn.IsUnique = true
+			}
+			if strings.Contains(cleanColumn, "PRIMARY KEY") {
+				tempColumn.IsPrimaryKey = true
+			}
+			columns = append(columns, tempColumn)
+			continue
+		}
+
+		if len(primaryKeyFieldName) > 0 {
+			fieldName := findConstraintFieldName(cleanColumn)
+			log.Println(fieldName)
+			tempColumn.IsPrimaryKey = true
+		}
+		columns = append(columns, tempColumn)
+
 	}
+}
+
+//column.IsForeignKey = false
+//column.Reference = Reference{}
+//column.Length = 0
+//column.Precision = 0
+//column.DefaultValue = nil
+
+func isAColumnWithPrimitiveType(str string) bool {
+	isPrimitive := regexp.MustCompile(
+		` int| INT| varchar| VARCHAR| float| FLOAT| datetime| DATETIME| tinyint| TINYINT`)
+	return isPrimitive.MatchString(str)
+}
+
+func findPrimitiveType(str string) string {
+	isPrimitive := regexp.MustCompile(
+		` int| INT| varchar| VARCHAR| float| FLOAT| datetime| DATETIME| tinyint| TINYINT`)
+	primitiveType := isPrimitive.FindStringSubmatch(str)
+	return primitiveType[0]
+}
+
+func findConstraintFieldName(str string) string {
+	fieldNameFinder := regexp.MustCompile(`\([\s\S]*?\)`)
+	fieldName := fieldNameFinder.FindStringSubmatch(str)
+	temp := strings.ReplaceAll(fieldName[0], "(`", "")
+	return strings.ReplaceAll(temp, "`)", "")
+}
+
+func findIndexOfColumnAccordingToItsName() {
+
 }

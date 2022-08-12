@@ -18,6 +18,21 @@ type Column struct {
 	DefaultValue any
 }
 
+func GetColumn() Column {
+	var column Column
+	column.ColumnName = ""
+	column.IsUnique = false
+	column.IsNullable = true
+	column.IsPrimaryKey = false
+	column.IsForeignKey = false
+	column.Reference = Reference{}
+	column.DataType = ""
+	column.Length = 0
+	column.Precision = 0
+	column.DefaultValue = nil
+	return column
+}
+
 type Reference struct {
 	ReferenceTable string
 	OnDelete       string
