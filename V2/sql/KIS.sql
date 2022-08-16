@@ -7,7 +7,7 @@ use MarketMeDb;
 CREATE TABLE IF NOT EXISTS `Company` (
      `Company_Id` INT NOT NULL AUTO_INCREMENT,
      `CompanyName` VARCHAR(100) CHARACTER SET 'utf16' NOT NULL,
-     `MyTest` FLOAT     (6, 2) NOT NULL,
+     `MyTest` FLOAT     (6, 2) NOT NULL DEFAULT 90,
      `Country` VARCHAR(100) CHARACTER SET 'utf16' COLLATE 'utf16_bin' NOT NULL,
      PRIMARY KEY (`Company_Id`),
      UNIQUE INDEX `idCompany_UNIQUE` (`Company_Id` ASC) )
