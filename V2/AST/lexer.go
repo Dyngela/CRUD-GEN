@@ -58,7 +58,7 @@ func mySQLParser(sql string) {
 		}
 	}
 	//TablesToString(Tables)
-	TableToString(Tables[0])
+	//TableToString(Tables[0])
 }
 
 /* getCreateTableDeclaration
@@ -83,7 +83,7 @@ func getCreateFieldDeclaration(str string, index int) []string {
 	for i := 0; i < len(columns); i++ {
 		columns[i] = strings.TrimSpace(columns[i])
 	}
-	columns[len(columns)-1] = cleanLastParenthesis(columns[len(columns)-1])
+	//columns[len(columns)-1] = cleanLastParenthesis(columns[len(columns)-1])
 	return columns
 }
 
@@ -117,7 +117,6 @@ It's stocked to a table within an array of tables that we use later for generati
 func setColumns(str []string) {
 	var columns []Column
 	for i := 0; i < len(str); i++ {
-
 		var tempColumn = GetColumn()
 		// We clean eventual spacing error in sql script
 		cleanColumn := cleanDoubleWhiteSpace(str[i])
@@ -157,7 +156,7 @@ func setColumns(str []string) {
 		}
 		Tables[len(Tables)-1].Columns = columns
 
-		// if the occurence contain PRIMARY KEY but is not with a primitive type, then it's
+		// if the occurrence contain PRIMARY KEY but is not with a primitive type, then it's
 		// to forward declare the primary key. Then we find the right column according to its name
 		// and set its bool IsPrimaryKey to true
 		if strings.Contains(cleanColumn, "PRIMARY KEY") {
@@ -165,7 +164,9 @@ func setColumns(str []string) {
 			setPrimaryKeyToTrueAccordingToColumnName(primaryKeyFieldName)
 		}
 		if strings.Contains(cleanColumn, "FOREIGN KEY") {
+			log.Println(str[i])
 
+			addForeignKey(str[i])
 		}
 
 	}
@@ -250,10 +251,112 @@ func setPrimaryKeyToTrueAccordingToColumnName(name string) {
 	}
 }
 
+/* setDefaultValue
+str -> the column string which have a default value
+Set the default value to a column
+*/
 func setDefaultValue(str string) string {
 	//TODO Handle possible string with space
 	defaultValueFinder := regexp.MustCompile(`DEFAULT \s*\S*`)
 	fieldName := defaultValueFinder.FindStringSubmatch(str)
 	value := strings.ReplaceAll(fieldName[0], "DEFAULT", "")
 	return strings.TrimSpace(value)
+}
+
+func addForeignKey(str string) {
+	defaultValueFinder := regexp.MustCompile(`FOREIGN KEY\s*\(\S*\)`)
+	fieldNameRegex := defaultValueFinder.FindStringSubmatch(str)
+	if len(fieldNameRegex) == 0 {
+		return
+	}
+	log.Println("aze")
+	//cleanedField := cleanDoubleWhiteSpace(fieldNameRegex[0])
+	splitField := strings.Split(fieldNameRegex[0], " ")
+	fieldName := strings.ReplaceAll(splitField[2], "(", "")
+	fieldName = strings.ReplaceAll(fieldName, ")", "")
+	fieldName = strings.ReplaceAll(fieldName, "`", "")
+	// TODO Assert that the first occurrence is the field of the table, and the second the field in the foreign table
+	var reference Reference
+	// We declare the field created with the same name as the foreign key like so.
+	for x := 0; x < len(Tables[len(Tables)-1].Columns); x++ {
+		if Tables[len(Tables)-1].Columns[x].ColumnName == fieldName {
+			reference.ReferenceTable, reference.FieldName = findForeignTableNameAndField(str)
+			reference.MappingType = "OneToMany"
+			reference.OnUpdate = findOnUpdateType(str)
+			reference.OnDelete = findOnDeleteType(str)
+			Tables[len(Tables)-1].Columns[x].IsForeignKey = true
+			Tables[len(Tables)-1].Columns[x].Reference = append(Tables[len(Tables)-1].Columns[x].Reference, reference)
+		}
+	}
+	addReferenceToForeignTable(str)
+
+}
+
+func findOnUpdateType(str string) string {
+	defaultValueFinder := regexp.MustCompile(`ON\s*UPDATE\s*[A-Z]*`)
+	fieldName := defaultValueFinder.FindStringSubmatch(str)
+	if len(fieldName) == 0 {
+		return ""
+	}
+	cleanedFieldName := cleanDoubleWhiteSpace(fieldName[0])
+	splitField := strings.Split(cleanedFieldName, " ")
+	return splitField[2]
+}
+
+func findOnDeleteType(str string) string {
+	defaultValueFinder := regexp.MustCompile(`ON\s*DELETE\s*[A-Z]*`)
+	fieldName := defaultValueFinder.FindStringSubmatch(str)
+	if len(fieldName) == 0 {
+		return ""
+	}
+	cleanedFieldName := cleanDoubleWhiteSpace(fieldName[0])
+	splitField := strings.Split(cleanedFieldName, " ")
+	return splitField[2]
+}
+
+func findForeignTableNameAndField(str string) (string, string) {
+	findReference := regexp.MustCompile(`REFERENCES \s*\S*\s*\(.*\)`)
+	reference := findReference.FindStringSubmatch(str)
+	cleanedField := cleanDoubleWhiteSpace(reference[0])
+	splitField := strings.Split(cleanedField, " ")
+	tableName := strings.ReplaceAll(splitField[1], "`", "")
+
+	findKey := regexp.MustCompile(`FOREIGN KEY\s*\(\S*\)`)
+	key := findKey.FindStringSubmatch(str)
+	cleanedField = cleanDoubleWhiteSpace(key[0])
+	splitField = strings.Split(key[0], " ")
+	fieldName := strings.ReplaceAll(splitField[2], "(", "")
+	fieldName = strings.ReplaceAll(fieldName, ")", "")
+	fieldName = strings.ReplaceAll(fieldName, "`", "")
+
+	return tableName, fieldName
+}
+
+func addReferenceToForeignTable(str string) {
+	var foreignReference Reference
+	findReference := regexp.MustCompile(`REFERENCES \s*\S*\s*\(.*\)`)
+	reference := findReference.FindStringSubmatch(str)
+
+	cleanedField := cleanDoubleWhiteSpace(reference[0])
+	splitField := strings.Split(cleanedField, " ")
+	tableName := strings.ReplaceAll(splitField[1], "`", "")
+
+	columnName := strings.ReplaceAll(splitField[2], "(", "")
+	columnName = strings.ReplaceAll(columnName, ")", "")
+	columnName = strings.ReplaceAll(columnName, "`", "")
+
+	referenceTable := Tables[len(Tables)-1].TableName
+	foreignReference.ReferenceTable = referenceTable
+	foreignReference.FieldName = columnName
+	foreignReference.MappingType = "ManyToOne"
+
+	for i := 0; i < len(Tables); i++ {
+		if Tables[i].TableName == tableName {
+			for x := 0; x < len(Tables[i].Columns); x++ {
+				if Tables[i].Columns[x].ColumnName == columnName {
+					Tables[i].Columns[x].Reference = append(Tables[i].Columns[x].Reference, foreignReference)
+				}
+			}
+		}
+	}
 }

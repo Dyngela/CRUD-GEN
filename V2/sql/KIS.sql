@@ -77,10 +77,11 @@ CREATE TABLE IF NOT EXISTS `Template` (
     UNIQUE INDEX `idTemplate_UNIQUE` (`Template_Id` ASC) ,
     INDEX `Fk_Company_idx` (`Company_Id` ASC) ,
     INDEX `Fk_ProductRange_idx` (`ProductRange_Id` ASC) ,
-    CONSTRAINT `Fk_CompanyId_Template` FOREIGN KEY (`Company_Id`) REFERENCES `Company` (`Company_Id`),
+    CONSTRAINT `Fk_CompanyId_Template` FOREIGN KEY (`Company_Id`) REFERENCES `Company` (`Company_Id`) ON UPDATE CASCADE,
     CONSTRAINT `Fk_ProductRange_Id_Template`
     FOREIGN KEY (`ProductRange_Id`)
-    REFERENCES `ProductRange` (`ProductRange_Id`))
+    REFERENCES `ProductRange` (`ProductRange_Id`) ON DELETE RESTRICT
+    )
 
     ENGINE = InnoDB
     AUTO_INCREMENT = 1

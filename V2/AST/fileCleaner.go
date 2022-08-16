@@ -31,7 +31,7 @@ func cleanComment(str string) string {
 }
 
 // ShouldPopLastIndex If the last index of an array is empty, then we trim it.
-// If there's only non printable character then we send back true so we trim the string.
+// If there's only non-printable character then we send back true, so we trim the string.
 // Else we send false and do nothing.
 func shouldPopLastIndex(sqlSplit string) bool {
 	sqlSplit = strings.Map(func(r rune) rune {
@@ -74,11 +74,3 @@ func cleanInParenthesisWhiteSpace(str string) string {
 	cleanedString := parenthesis.ReplaceAllString(str, "(")
 	return cleanedString
 }
-
-//TODO Format number so they have that format float(x,y) -> without space.
-//So we can modify the split and ensure we dont split in lexer.setColumns wrong
-//func formatNumeric(str string) string {
-//	parenthesis := regexp.MustCompile(`\s*\(`)
-//	cleanedString := parenthesis.ReplaceAllString(str, "")
-//	return cleanedString
-//}

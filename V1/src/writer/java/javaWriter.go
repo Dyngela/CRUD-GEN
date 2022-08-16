@@ -17,7 +17,6 @@ func GenerateJavaProject(projectName string) {
 		return
 	}
 
-	// TODO ajouter une relation pour catégoriser les tables.
 	resourcesDirectory := fmt.Sprintf("%s/%s/src/main/resources", baseDirectory, projectName)
 	modelDirectory := fmt.Sprintf("%s/%s/src/main/java/com/ne/%s/model", baseDirectory, projectName, tables[0].FolderName)
 	repositoryDirectory := fmt.Sprintf("%s/%s/src/main/java/com/ne/%s/repository", baseDirectory, projectName, tables[0].FolderName)
@@ -35,7 +34,6 @@ func GenerateJavaProject(projectName string) {
 		return
 	}
 
-	// TODO A mettre dans des thread différents en fin de projet.
 	CreateJavaModel(tables)
 	CreateJavaRepositories(tables)
 }
