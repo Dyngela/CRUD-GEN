@@ -1,4 +1,4 @@
-package AST
+package parser
 
 import (
 	"fmt"
@@ -11,7 +11,7 @@ import (
 
 var Tables []Table
 
-func ReadFile() {
+func ReadFile() []Table {
 	//data, err := os.ReadFile("C:\\dev\\Taff\\T&S\\Catalogue\\CRUDGEN\\V2\\sql\\script.sql")
 	data, err := os.ReadFile("C:\\dev\\Taff\\T&S\\Catalogue\\CRUDGEN\\V2\\sql\\KIS.sql")
 	//data, err := os.ReadFile("C:\\dev\\T&S\\catalogue\\module\\CRUD generator\\CRUD-POC\\V2\\sql\\script.sql")
@@ -19,6 +19,7 @@ func ReadFile() {
 
 	check(err)
 	mySQLParser(string(data))
+	return Tables
 }
 
 func check(e error) {
@@ -57,7 +58,7 @@ func mySQLParser(sql string) {
 
 		}
 	}
-	TablesToString(Tables)
+	//TablesToString(Tables)
 	//TableToString(Tables[0])
 }
 

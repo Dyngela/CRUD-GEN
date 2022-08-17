@@ -1,9 +1,11 @@
 package main
 
 import (
-	"CRUDGEN/V2/AST"
+	"CRUDGEN/V2/parser"
+	"CRUDGEN/V2/writer/java"
 )
 
 func main() {
-	AST.ReadFile()
+	tables := parser.ReadFile()
+	java.GenerateSpringProject(tables, "SpringProject")
 }
