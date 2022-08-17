@@ -23,7 +23,7 @@ func generateJavaService(table parser.Table, path string) {
 	%s
 }`, cases.Title(language.Und).String(table.TableName), generateJavaSaveMethod(table), generateJavaDeleteMethod(table),
 		generateJavaFindAllMethod(table), generateJavaFindByIdMethod(table))
-	path = path + "/" + table.TableName + ".java"
+	path = path + "/" + table.TableName + "Service.java"
 	fe, _ := os.Create(path)
 	_, _ = fe.WriteString(str)
 }
