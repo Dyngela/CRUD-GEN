@@ -13,9 +13,9 @@ var Tables []Table
 
 func ReadFile() {
 	//data, err := os.ReadFile("C:\\dev\\Taff\\T&S\\Catalogue\\CRUDGEN\\V2\\sql\\script.sql")
-	//data, err := os.ReadFile("C:\\dev\\Taff\\T&S\\Catalogue\\CRUDGEN\\V2\\sql\\KIS.sql")
+	data, err := os.ReadFile("C:\\dev\\Taff\\T&S\\Catalogue\\CRUDGEN\\V2\\sql\\KIS.sql")
 	//data, err := os.ReadFile("C:\\dev\\T&S\\catalogue\\module\\CRUD generator\\CRUD-POC\\V2\\sql\\script.sql")
-	data, err := os.ReadFile("C:\\dev\\T&S\\catalogue\\module\\CRUD generator\\CRUD-POC\\V2\\sql\\KIS.sql")
+	//data, err := os.ReadFile("C:\\dev\\T&S\\catalogue\\module\\CRUD generator\\CRUD-POC\\V2\\sql\\KIS.sql")
 
 	check(err)
 	mySQLParser(string(data))
@@ -57,7 +57,7 @@ func mySQLParser(sql string) {
 
 		}
 	}
-	//TablesToString(Tables)
+	TablesToString(Tables)
 	//TableToString(Tables[0])
 }
 
@@ -164,8 +164,6 @@ func setColumns(str []string) {
 			setPrimaryKeyToTrueAccordingToColumnName(primaryKeyFieldName)
 		}
 		if strings.Contains(cleanColumn, "FOREIGN KEY") {
-			log.Println(str[i])
-
 			addForeignKey(str[i])
 		}
 
@@ -263,13 +261,16 @@ func setDefaultValue(str string) string {
 	return strings.TrimSpace(value)
 }
 
+/* addForeignKey
+str -> the column string which have foreign key
+Add the reference to the table in which the foreign key is originated and call a function to add it to the reverse table
+*/
 func addForeignKey(str string) {
 	defaultValueFinder := regexp.MustCompile(`FOREIGN KEY\s*\(\S*\)`)
 	fieldNameRegex := defaultValueFinder.FindStringSubmatch(str)
 	if len(fieldNameRegex) == 0 {
 		return
 	}
-	log.Println("aze")
 	//cleanedField := cleanDoubleWhiteSpace(fieldNameRegex[0])
 	splitField := strings.Split(fieldNameRegex[0], " ")
 	fieldName := strings.ReplaceAll(splitField[2], "(", "")
@@ -292,46 +293,10 @@ func addForeignKey(str string) {
 
 }
 
-func findOnUpdateType(str string) string {
-	defaultValueFinder := regexp.MustCompile(`ON\s*UPDATE\s*[A-Z]*`)
-	fieldName := defaultValueFinder.FindStringSubmatch(str)
-	if len(fieldName) == 0 {
-		return ""
-	}
-	cleanedFieldName := cleanDoubleWhiteSpace(fieldName[0])
-	splitField := strings.Split(cleanedFieldName, " ")
-	return splitField[2]
-}
-
-func findOnDeleteType(str string) string {
-	defaultValueFinder := regexp.MustCompile(`ON\s*DELETE\s*[A-Z]*`)
-	fieldName := defaultValueFinder.FindStringSubmatch(str)
-	if len(fieldName) == 0 {
-		return ""
-	}
-	cleanedFieldName := cleanDoubleWhiteSpace(fieldName[0])
-	splitField := strings.Split(cleanedFieldName, " ")
-	return splitField[2]
-}
-
-func findForeignTableNameAndField(str string) (string, string) {
-	findReference := regexp.MustCompile(`REFERENCES \s*\S*\s*\(.*\)`)
-	reference := findReference.FindStringSubmatch(str)
-	cleanedField := cleanDoubleWhiteSpace(reference[0])
-	splitField := strings.Split(cleanedField, " ")
-	tableName := strings.ReplaceAll(splitField[1], "`", "")
-
-	findKey := regexp.MustCompile(`FOREIGN KEY\s*\(\S*\)`)
-	key := findKey.FindStringSubmatch(str)
-	cleanedField = cleanDoubleWhiteSpace(key[0])
-	splitField = strings.Split(key[0], " ")
-	fieldName := strings.ReplaceAll(splitField[2], "(", "")
-	fieldName = strings.ReplaceAll(fieldName, ")", "")
-	fieldName = strings.ReplaceAll(fieldName, "`", "")
-
-	return tableName, fieldName
-}
-
+/* addReferenceToForeignTable
+str -> the column string which have foreign key with reference.
+Add a reference to the reverse table from foreign key declaration.
+*/
 func addReferenceToForeignTable(str string) {
 	var foreignReference Reference
 	findReference := regexp.MustCompile(`REFERENCES \s*\S*\s*\(.*\)`)
@@ -359,4 +324,55 @@ func addReferenceToForeignTable(str string) {
 			}
 		}
 	}
+}
+
+/* findOnUpdateType
+str -> the column string which have foreign key with reference.
+Find if there's an ON UPDATE order for a particular foreign key and store it
+*/
+func findOnUpdateType(str string) string {
+	defaultValueFinder := regexp.MustCompile(`ON\s*UPDATE\s*[A-Z]*`)
+	fieldName := defaultValueFinder.FindStringSubmatch(str)
+	if len(fieldName) == 0 {
+		return ""
+	}
+	cleanedFieldName := cleanDoubleWhiteSpace(fieldName[0])
+	splitField := strings.Split(cleanedFieldName, " ")
+	return splitField[2]
+}
+
+/* findOnDeleteType
+str -> the column string which have foreign key with reference.
+Find if there's an ON DELETE order for a particular foreign key and store it
+*/
+func findOnDeleteType(str string) string {
+	defaultValueFinder := regexp.MustCompile(`ON\s*DELETE\s*[A-Z]*`)
+	fieldName := defaultValueFinder.FindStringSubmatch(str)
+	if len(fieldName) == 0 {
+		return ""
+	}
+	cleanedFieldName := cleanDoubleWhiteSpace(fieldName[0])
+	splitField := strings.Split(cleanedFieldName, " ")
+	return splitField[2]
+}
+
+/* findForeignTableNameAndField
+find the occurrence of the table and its column corresponding to the reverse table of a particular foreign key
+*/
+func findForeignTableNameAndField(str string) (string, string) {
+	findReference := regexp.MustCompile(`REFERENCES \s*\S*\s*\(.*\)`)
+	reference := findReference.FindStringSubmatch(str)
+	cleanedField := cleanDoubleWhiteSpace(reference[0])
+	splitField := strings.Split(cleanedField, " ")
+	tableName := strings.ReplaceAll(splitField[1], "`", "")
+
+	findKey := regexp.MustCompile(`FOREIGN KEY\s*\(\S*\)`)
+	key := findKey.FindStringSubmatch(str)
+	cleanedField = cleanDoubleWhiteSpace(key[0])
+	splitField = strings.Split(key[0], " ")
+	fieldName := strings.ReplaceAll(splitField[2], "(", "")
+	fieldName = strings.ReplaceAll(fieldName, ")", "")
+	fieldName = strings.ReplaceAll(fieldName, "`", "")
+
+	return tableName, fieldName
 }
