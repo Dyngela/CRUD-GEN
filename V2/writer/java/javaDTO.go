@@ -4,7 +4,6 @@ import (
 	"CRUDGEN/V2/parser"
 	"fmt"
 	"github.com/iancoleman/strcase"
-	"log"
 	"os"
 )
 
@@ -13,11 +12,11 @@ func generateJavaDTO(table parser.Table, path string) {
 	fields, tables := generateJavaFieldsDTO(table)
 	str = str + generateJavaDTOImport(table, tables)
 	str = str + fmt.Sprintf(
-		`public class %s {
+		`public class %sDTO {
 	%s
 }`, strcase.ToCamel(table.TableName), fields)
 
-	path = path + "/" + table.TableName + "DTO.java"
+	path = path + "/" + strcase.ToCamel(table.TableName) + "DTO.java"
 	fe, _ := os.Create(path)
 	_, _ = fe.WriteString(str)
 }
@@ -28,7 +27,7 @@ func generateJavaDTOImport(table parser.Table, tables []string) string {
 	for i := 0; i < len(tables); i++ {
 		formattedTablesImport = formattedTablesImport +
 			fmt.Sprintf("import com.ne.%s.%s;\n",
-				strcase.ToLowerCamel(tables[i]), strcase.ToCamel(tables[i]))
+				strcase.ToLowerCamel(tables[i]), strcase.ToCamel(tables[i])+"DTO")
 	}
 
 	return fmt.Sprintf(`package com.ne.%s;
@@ -37,8 +36,11 @@ func generateJavaDTOImport(table parser.Table, tables []string) string {
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Setter
@@ -59,10 +61,8 @@ func generateJavaFieldsDTO(table parser.Table) (string, []string) {
 
 		if len(table.Columns[i].Reference) > 0 {
 			for ref := 0; ref < len(table.Columns[i].Reference); ref++ {
-				classToImport = append(classToImport, strcase.ToCamel(table.Columns[i].Reference[ref].ReferenceTable)+"DTO")
+				classToImport = append(classToImport, strcase.ToCamel(table.Columns[i].Reference[ref].ReferenceTable))
 				if table.Columns[i].Reference[ref].MappingType == "OneToMany" {
-					log.Println("aze")
-
 					classType := strcase.ToCamel(table.Columns[i].Reference[ref].ReferenceTable) + "DTO"
 					relationWriter = relationWriter + fmt.Sprintf("private List<%s> %s;\n\t",
 						classType, strcase.ToLowerCamel(table.Columns[i].Reference[ref].ReferenceTable))
@@ -75,7 +75,9 @@ func generateJavaFieldsDTO(table parser.Table) (string, []string) {
 			}
 		}
 	}
-
+	if relationWriter == "" {
+		return fieldsWriter, classToImport
+	}
 	fieldsWriter = fieldsWriter + "\n\t" + relationWriter
 
 	return fieldsWriter, classToImport

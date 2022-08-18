@@ -11,7 +11,8 @@ import (
 const baseDirectory = "C:/CRUDGenerator"
 
 func GenerateSpringProject(tables []parser.Table, projectName string) {
-
+	mainDirectory := fmt.Sprintf("%s/%s/src/main/java/com/ne", baseDirectory, strcase.ToLowerCamel(projectName))
+	rootDirectory := fmt.Sprintf("%s/%s", baseDirectory, strcase.ToLowerCamel(projectName))
 	resourcesDirectory := fmt.Sprintf("%s/%s/src/main/resources", baseDirectory, strcase.ToLowerCamel(projectName))
 	if err := os.MkdirAll(resourcesDirectory, os.ModePerm); err != nil {
 		log.Panic(err)
@@ -22,6 +23,11 @@ func GenerateSpringProject(tables []parser.Table, projectName string) {
 		log.Panic(err)
 		return
 	}
+	generateJavaMainClass(mainDirectory, projectName)
+	generateJavaPomXML(rootDirectory, projectName)
+	generateJavaGitignore(rootDirectory)
+	//TODO uncomment
+	//generateJavaApplicationProperties(resourcesDirectory)
 	generateJavaException(exceptionDirectory)
 
 	for i := 0; i < len(tables); i++ {
@@ -35,8 +41,8 @@ func GenerateSpringProject(tables []parser.Table, projectName string) {
 		generateJavaDTO(tables[i], tableDirectory)
 		generateJavaService(tables[i], tableDirectory)
 		generateJavaRepository(tables[i], tableDirectory)
+		generateJavaController(tables[i], tableDirectory)
 
 	}
 
-	generateJavaAnnexFile()
 }

@@ -15,7 +15,7 @@ func generateJavaRepository(table parser.Table, path string) {
 		`public interface %s extends JpaRepository<%s, %s> {
 
 }`, strcase.ToCamel(table.TableName)+"Repository", strcase.ToCamel(table.TableName), findDataTypeOfPrimitiveTypeAccording(table))
-	path = path + "/" + table.TableName + "Repository.java"
+	path = path + "/" + strcase.ToCamel(table.TableName) + "Repository.java"
 	fe, _ := os.Create(path)
 	_, _ = fe.WriteString(str)
 }

@@ -30,3 +30,12 @@ func transformDataType(table *parser.Table) {
 		}
 	}
 }
+
+func getTablePrimaryKeyColumn(table parser.Table) parser.Column {
+	for i := 0; i < len(table.Columns); i++ {
+		if table.Columns[i].IsPrimaryKey {
+			return table.Columns[i]
+		}
+	}
+	return parser.Column{}
+}
