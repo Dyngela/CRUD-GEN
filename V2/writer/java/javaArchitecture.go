@@ -14,11 +14,12 @@ func GenerateSpringProject(tables []parser.Table, projectName string) {
 	mainDirectory := fmt.Sprintf("%s/%s/src/main/java/com/ne", baseDirectory, strcase.ToLowerCamel(projectName))
 	rootDirectory := fmt.Sprintf("%s/%s", baseDirectory, strcase.ToLowerCamel(projectName))
 	resourcesDirectory := fmt.Sprintf("%s/%s/src/main/resources", baseDirectory, strcase.ToLowerCamel(projectName))
+	exceptionDirectory := fmt.Sprintf("%s/%s/src/main/java/com/ne/exception", baseDirectory, strcase.ToLowerCamel(projectName))
+	
 	if err := os.MkdirAll(resourcesDirectory, os.ModePerm); err != nil {
 		log.Panic(err)
 		return
 	}
-	exceptionDirectory := fmt.Sprintf("%s/%s/src/main/java/com/ne/exception", baseDirectory, strcase.ToLowerCamel(projectName))
 	if err := os.MkdirAll(exceptionDirectory, os.ModePerm); err != nil {
 		log.Panic(err)
 		return
