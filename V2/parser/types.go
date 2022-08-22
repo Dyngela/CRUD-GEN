@@ -68,6 +68,7 @@ func GetColumn() Column {
 type Reference struct {
 	ReferenceTable string
 	FieldName      string
+	ForeignKeyName string
 	MappingType    string
 	OnDelete       string
 	OnUpdate       string

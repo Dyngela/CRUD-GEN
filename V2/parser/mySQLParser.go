@@ -267,23 +267,14 @@ str -> the column string which have foreign key
 Add the reference to the table in which the foreign key is originated and call a function to add it to the reverse table
 */
 func addForeignKey(str string) {
-	defaultValueFinder := regexp.MustCompile(`FOREIGN KEY\s*\(\S*\)`)
-	fieldNameRegex := defaultValueFinder.FindStringSubmatch(str)
-	if len(fieldNameRegex) == 0 {
-		return
-	}
-	//cleanedField := cleanDoubleWhiteSpace(fieldNameRegex[0])
-	splitField := strings.Split(fieldNameRegex[0], " ")
-	fieldName := strings.ReplaceAll(splitField[2], "(", "")
-	fieldName = strings.ReplaceAll(fieldName, ")", "")
-	fieldName = strings.ReplaceAll(fieldName, "`", "")
+	fieldName := findForeignKeyName(str)
 	// TODO Assert that the first occurrence is the field of the table, and the second the field in the foreign table
 	var reference Reference
 	// We declare the field created with the same name as the foreign key like so.
 	for x := 0; x < len(Tables[len(Tables)-1].Columns); x++ {
 		if Tables[len(Tables)-1].Columns[x].ColumnName == fieldName {
 			reference.ReferenceTable, reference.FieldName = findForeignTableNameAndField(str)
-			reference.MappingType = "OneToMany"
+			reference.MappingType = "ManyToOne"
 			reference.OnUpdate = findOnUpdateType(str)
 			reference.OnDelete = findOnDeleteType(str)
 			Tables[len(Tables)-1].Columns[x].IsForeignKey = true
@@ -314,7 +305,8 @@ func addReferenceToForeignTable(str string) {
 	referenceTable := Tables[len(Tables)-1].TableName
 	foreignReference.ReferenceTable = referenceTable
 	foreignReference.FieldName = columnName
-	foreignReference.MappingType = "ManyToOne"
+	foreignReference.MappingType = "OneToMany"
+	foreignReference.ForeignKeyName = findForeignKeyName(str)
 
 	for i := 0; i < len(Tables); i++ {
 		if Tables[i].TableName == tableName {
@@ -325,6 +317,22 @@ func addReferenceToForeignTable(str string) {
 			}
 		}
 	}
+}
+
+func findForeignKeyName(str string) string {
+	defaultValueFinder := regexp.MustCompile(`FOREIGN KEY\s*\(\S*\)`)
+	fieldNameRegex := defaultValueFinder.FindStringSubmatch(str)
+	if len(fieldNameRegex) == 0 {
+		return ""
+	}
+
+	//cleanedField := cleanDoubleWhiteSpace(fieldNameRegex[0])
+	splitField := strings.Split(fieldNameRegex[0], " ")
+	fieldName := strings.ReplaceAll(splitField[2], "(", "")
+	fieldName = strings.ReplaceAll(fieldName, ")", "")
+	fieldName = strings.ReplaceAll(fieldName, "`", "")
+
+	return fieldName
 }
 
 /* findOnUpdateType
