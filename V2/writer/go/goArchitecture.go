@@ -27,10 +27,10 @@ func GenerateGinProject(tables []parser.Table, projectName string) {
 			return
 		}
 		transformDataType(&tables[i])
-		generateGoModel(tables[i], tableDirectory)
-		generateGoDTO(tables[i], tableDirectory)
-		generateGoService(tables[i], tableDirectory)
-		generateGoRepository(tables[i], tableDirectory)
-		generateGoController(tables[i], tableDirectory)
+		//generateGoModel(tables[i], tableDirectory)
+		//generateGoDTO(tables[i], tableDirectory)
+		//generateGoService(tables[i], tableDirectory)
+		//generateGoRepository(tables[i], tableDirectory)
+		//generateGoController(tables[i], tableDirectory)
 	}
 }

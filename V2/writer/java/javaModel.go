@@ -16,7 +16,7 @@ func generateJavaModel(table parser.Table, path string) {
 public class %s implements Serializable {
 	%s
 	%s
-}`, strcase.ToSnake(table.TableName), strcase.ToCamel(table.TableName), generateJavaModelClass(table), relations)
+}`, table.TableName, strcase.ToCamel(table.TableName), generateJavaModelClass(table), relations)
 	path = path + "/" + strcase.ToCamel(table.TableName) + ".java"
 	fe, _ := os.Create(path)
 	_, _ = fe.WriteString(str)
