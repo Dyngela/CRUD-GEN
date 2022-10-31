@@ -4,7 +4,6 @@ import (
 	"CRUDGEN/V2/parser"
 	"fmt"
 	"github.com/iancoleman/strcase"
-	"log"
 	"os"
 	"strings"
 )
@@ -53,9 +52,9 @@ import java.util.List;
 func generateJavaModelClass(table parser.Table, columnExcluded []string) string {
 	var fieldsWriter = ""
 	for _, f := range table.Columns {
-		if findIfColumnIsAManyToOneRelation(f, columnExcluded) {
-			continue
-		}
+		//if findIfColumnIsAManyToOneRelation(f, columnExcluded) {
+		//	continue
+		//}
 		if f.IsPrimaryKey == true {
 			fieldsWriter = fieldsWriter + "\n\t@Id\n\t"
 			//fieldsWriter = fieldsWriter + fmt.Sprintf(`@SequenceGenerator(name = "%s_sequence", sequenceName = "%s_sequence")`, strcase.ToSnake(table.TableName), strcase.ToSnake(table.TableName))
@@ -97,7 +96,6 @@ func generateJavaModelRelation(table parser.Table) (string, []string, []string) 
 		reference := table.Columns[i].Reference
 		if len(reference) > 0 {
 			for r := 0; r < len(reference); r++ {
-				log.Println(reference)
 				if reference[r].MappingType == "OneToMany" {
 					relation = relation + fmt.Sprintf(`@OneToMany(mappedBy = "%s"%s, fetch = FetchType.LAZY)`,
 						strcase.ToLowerCamel(table.TableName), findCascadeType(reference[r]))
