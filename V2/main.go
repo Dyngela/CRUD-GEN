@@ -7,6 +7,6 @@ import (
 
 func main() {
 	tables := parser.ReadFile()
-	java.GenerateSpringProject(tables, "SpringProject")
+	java.GenerateSpringProject(tables, "Test")
 	//_go.GenerateGinProject(tables, "GinProject")
 }

@@ -14,8 +14,8 @@ var Tables []Table
 func ReadFile() []Table {
 	//data, err := os.ReadFile("C:\\dev\\Taff\\T&S\\Catalogue\\CRUDGEN\\V2\\sql\\script.sql")
 	//data, err := os.ReadFile("C:\\dev\\Taff\\T&S\\Catalogue\\CRUDGEN\\V2\\sql\\KIS.sql")
-	//data, err := os.ReadFile("C:\\dev\\T&S\\catalogue\\module\\CRUD generator\\CRUD-POC\\V2\\sql\\script.sql")
-	data, err := os.ReadFile("C:\\dev\\T&S\\catalogue\\module\\CRUD generator\\CRUD-POC\\V2\\sql\\KIS.sql")
+	data, err := os.ReadFile("C:\\dev\\TS\\CRUD generator\\CRUD-POC\\V2\\sql\\script.sql")
+	//data, err := os.ReadFile("C:\\dev\\TS\\CRUD generator\\CRUD-POC\\V2\\sql\\KIS.sql")
 
 	check(err)
 	mySQLParser(string(data))
@@ -268,6 +268,7 @@ Add the reference to the table in which the foreign key is originated and call a
 */
 func addForeignKey(str string) {
 	fieldName := findForeignKeyName(str)
+
 	// TODO Assert that the first occurrence is the field of the table, and the second the field in the foreign table
 	var reference Reference
 	// We declare the field created with the same name as the foreign key like so.
@@ -282,7 +283,6 @@ func addForeignKey(str string) {
 		}
 	}
 	addReferenceToForeignTable(str)
-
 }
 
 /* addReferenceToForeignTable

@@ -1,13 +1,17 @@
 create table product (
-    id serial PRIMARY KEY,
-    name varchar       (40) NOT NULL UNIQUE,
-    price numeric     (5,    2),
-    since date
+    `product_id` INT NOT NULL AUTO_INCREMENT,
+    `name` varchar(40) NOT NULL UNIQUE,
+    `price` FLOAT(5, 2),
+    `since` DATETIME,
+    PRIMARY KEY (`product_id`),
 );
 
 create table users (
-    id serial PRIMARY KEY,
-    name varchar
+    `user_id` INT NOT NULL AUTO_INCREMENT,
+    `name` varchar,
+    `product_id` INT NOT NULL,
+    PRIMARY KEY (`user_id`),
+    CONSTRAINT `Fk_product_id_users` FOREIGN KEY (`product_id`) REFERENCES `product` (`product_id`) ON UPDATE CASCADE,
 );
 
 -- drop table product;

@@ -52,9 +52,9 @@ import java.util.List;
 func generateJavaModelClass(table parser.Table, columnExcluded []string) string {
 	var fieldsWriter = ""
 	for _, f := range table.Columns {
-		//if findIfColumnIsAManyToOneRelation(f, columnExcluded) {
-		//	continue
-		//}
+		if findIfColumnIsAManyToOneRelation(f, columnExcluded) {
+			continue
+		}
 		if f.IsPrimaryKey == true {
 			fieldsWriter = fieldsWriter + "\n\t@Id\n\t"
 			//fieldsWriter = fieldsWriter + fmt.Sprintf(`@SequenceGenerator(name = "%s_sequence", sequenceName = "%s_sequence")`, strcase.ToSnake(table.TableName), strcase.ToSnake(table.TableName))
@@ -82,7 +82,7 @@ func generateJavaModelClass(table parser.Table, columnExcluded []string) string 
 				f.Length, f.Precision, f.IsUnique, f.IsNullable, strings.ToLower(f.ColumnName))
 			fieldsWriter = fieldsWriter + "\n\t"
 		}
-		fieldsWriter = fieldsWriter + fmt.Sprintf("private %s %s; \n\n\t", strcase.ToCamel(f.DataType),
+		fieldsWriter = fieldsWriter + fmt.Sprintf("private %s %s; \n\t", strcase.ToCamel(f.DataType),
 			strcase.ToLowerCamel(f.ColumnName))
 	}
 	return fieldsWriter
@@ -100,7 +100,7 @@ func generateJavaModelRelation(table parser.Table) (string, []string, []string) 
 					relation = relation + fmt.Sprintf(`@OneToMany(mappedBy = "%s"%s, fetch = FetchType.LAZY)`,
 						strcase.ToLowerCamel(table.TableName), findCascadeType(reference[r]))
 					relation = relation + "\n\t"
-					relation = relation + fmt.Sprintf("private List<%s> %s;\n\n\t",
+					relation = relation + fmt.Sprintf("private List<%s> %s;\n\t",
 						strcase.ToCamel(reference[r].ReferenceTable), getTableAndFieldConcat(reference[r].ReferenceTable, reference[r].ForeignKeyName))
 					referencedTableToBeImported = append(referencedTableToBeImported, strcase.ToCamel(reference[r].ReferenceTable))
 				}
@@ -109,7 +109,7 @@ func generateJavaModelRelation(table parser.Table) (string, []string, []string) 
 					relation = relation + fmt.Sprintf("@JoinColumn(name = \"%s\")\n\t",
 						findPrimaryKeyAccordingToATableName(reference[r].ReferenceTable))
 					//findPrimaryKeyAccordingToATableName(table.TableName))
-					relation = relation + fmt.Sprintf("private %s %s;\n\n\t",
+					relation = relation + fmt.Sprintf("private %s %s;\n\t",
 						strcase.ToCamel(reference[r].ReferenceTable), strcase.ToLowerCamel(reference[r].ReferenceTable))
 					referencedTableToBeImported = append(referencedTableToBeImported, strcase.ToCamel(reference[r].ReferenceTable))
 					columnExcluded = append(columnExcluded, reference[r].FieldName)

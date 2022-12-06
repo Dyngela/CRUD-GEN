@@ -27,7 +27,6 @@ func GenerateSpringProject(tables []parser.Table, projectName string) {
 	generateJavaMainClass(mainDirectory, projectName)
 	generateJavaPomXML(rootDirectory, projectName)
 	generateJavaGitignore(rootDirectory)
-	//TODO uncomment
 	//generateJavaApplicationProperties(resourcesDirectory)
 	generateJavaException(exceptionDirectory)
 
@@ -43,7 +42,6 @@ func GenerateSpringProject(tables []parser.Table, projectName string) {
 		generateJavaService(tables[i], tableDirectory)
 		generateJavaRepository(tables[i], tableDirectory)
 		generateJavaController(tables[i], tableDirectory)
-
 	}
 
 }
